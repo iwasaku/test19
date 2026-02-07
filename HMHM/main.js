@@ -738,6 +738,7 @@ phina.define('MainScene', {
                     hemaObjects.splice(index, 1);
                 }
 
+                // 爆発表示
                 Explosion(hema.x, hema.y, HEMA_RADIUS * 2).addChildTo(group3);
 
                 // 画面から削除
@@ -981,10 +982,13 @@ phina.define('MainScene', {
             if (index > -1) {
                 hemaObjects.splice(index, 1);
             }
+            // 爆発表示
+            Explosion(hema.x, hema.y, HEMA_RADIUS * 2).addChildTo(group3);
 
             // 画面から削除
             hema.remove();
         });
+
         // タイムボム
         if (bomb.kind === 1) {
             this.gameTime += BOMB_TIME_BONUS;
@@ -994,8 +998,9 @@ phina.define('MainScene', {
         // スコア表示更新
         this.scoreLabel.text = 'Score\n' + this.score;
 
-        // スコアポップアップ
+        // 爆発音＆スコアポップアップ
         if (totalScore > 0) {
+            SoundManager.play("explosion_" + myRandom(0, 6));
             ScorePopup(totalScore, bombX, bombY, this.isFever).addChildTo(this);
         }
 
