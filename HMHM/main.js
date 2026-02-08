@@ -14,7 +14,7 @@ const COMBO_TIME_LIMIT = 1.0; // コンボ継続時間（秒）
 const COMBO_TIME_BONUS = 1; // 5コンボごとのボーナス時間（秒）
 const BOMB_TIME_BONUS = 2; // タイムボムのボーナス時間（秒）
 const PARTY_GAUGE_MAX = 600; // パーティーゲージ最大値
-const PARTY_DECREASE_RATE = 1; // 毎フレームの減少量
+const PARTY_DECREASE_RATE = 0.5; // 毎フレームの減少量
 const PARTY_PER_HEMA = 20; // ヘマ1個あたりのゲージ増加量
 const PARTY_TIME_BONUS = 5; // パーティー突入時のボーナス時間（秒）
 const PARTY_SCORE_MULTIPLIER = 3; // パーティー中のスコア倍率
@@ -74,6 +74,7 @@ phina.define('Hema', {
         this.selected = true;
         this.scaleX = 1.2;
         this.scaleY = 1.2;
+        SoundManager.play("select");
     },
 
     unhighlight: function () {
@@ -711,7 +712,8 @@ phina.define('MainScene', {
             centerY /= this.chain.length;
 
             // 7チェーン以上でボム生成
-            const shouldCreateBomb = this.chain.length >= BOMB_CHAIN_LENGTH;
+            let chainLength = this.chain.length;
+            const shouldCreateBomb = chainLength >= BOMB_CHAIN_LENGTH;
 
             // 3つ以上つながっていたら消す
             this.chain.forEach((hema) => {
@@ -744,7 +746,22 @@ phina.define('MainScene', {
                 // 画面から削除
                 hema.remove();
             });
-            SoundManager.play("explosion_" + myRandom(0, 6));
+
+            let explosionSound = "";
+            if (chainLength <= 6) {
+                // 0〜6
+                explosionSound = "explosion_0";
+            } else if (chainLength <= 8) {
+                // 7〜8
+                explosionSound = "explosion_1";
+            } else if (chainLength <= 10) {
+                // 9〜10
+                explosionSound = "explosion_2";
+            } else {
+                // 11〜
+                explosionSound = "explosion_3";
+            }
+            SoundManager.play(explosionSound);
 
             // スコアポップアップ表示
             let chainScore = this.chain.length * 10 + (this.combo - 1) * this.chain.length * 5;
@@ -757,10 +774,10 @@ phina.define('MainScene', {
 
             // ボム生成
             if (shouldCreateBomb) {
-                if (this.chain.length <= 8) {
+                if (chainLength <= 8) {
                     // 7~8
                     this.createBomb(0, centerX, centerY);
-                } else if (this.chain.length <= 10) {
+                } else if (chainLength <= 10) {
                     // 9~10
                     this.createBomb(1, centerX, centerY);
                 } else {
@@ -823,7 +840,7 @@ phina.define('MainScene', {
             }
         } else {
             // パーティー中は減少
-            this.partyGaugeValue -= PARTY_DECREASE_RATE * 2;
+            this.partyGaugeValue -= PARTY_DECREASE_RATE * 4;
             if (this.partyGaugeValue <= 0) {
                 this.exitParty();
             }
@@ -1000,7 +1017,7 @@ phina.define('MainScene', {
 
         // 爆発音＆スコアポップアップ
         if (totalScore > 0) {
-            SoundManager.play("explosion_" + myRandom(0, 6));
+            SoundManager.play("explosion_" + (4 + bomb.kind));
             ScorePopup(totalScore, bombX, bombY, this.isFever).addChildTo(this);
         }
 

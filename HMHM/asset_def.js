@@ -50,6 +50,7 @@ const ASSETS = {
         "explosion_4": "https://iwasaku.github.io/test8/COKS/resource/explosion_4.mp3",
         "explosion_5": "https://iwasaku.github.io/test8/COKS/resource/explosion_5.mp3",
         "explosion_6": "https://iwasaku.github.io/test8/COKS/resource/explosion_6.mp3",
+        "select": "https://iwasaku.github.io/test19/HMHM/resource/tap.mp3",
         "gameover": "https://iwasaku.github.io/test11/UT-404/SSS2/resource/t02/12.mp3",
     },
 };
