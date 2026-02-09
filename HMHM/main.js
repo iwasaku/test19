@@ -26,6 +26,7 @@ let hemaObjects = [];
 let bombObjects = [];
 
 let bgSprites = [];
+let canVibrate = false;
 
 // 表示プライオリティは 0：奥 → 9：手前 の順番
 let group0 = null;  // BG
@@ -75,6 +76,9 @@ phina.define('Hema', {
         this.scaleX = 1.2;
         this.scaleY = 1.2;
         SoundManager.play("select");
+        if (canVibrate) {
+            window.navigator.vibrate(50);
+        }
     },
 
     unhighlight: function () {
@@ -253,6 +257,67 @@ phina.define('ScorePopup', {
     },
 });
 
+// スイッチクラスの定義
+phina.define('ToggleSwitch', {
+    superClass: 'DisplayElement',
+
+    init: function (options) {
+        this.superInit(options);
+
+        options = (options || {}).$safe({
+            width: 48,
+            height: 24,
+            onColor: '#4CAF50',
+            offColor: '#ccc',
+            isOn: false,
+        });
+
+        this.isOn = options.isOn;
+
+        // 背景部分
+        this.bg = RectangleShape({
+            width: options.width,
+            height: options.height,
+            fill: this.isOn ? options.onColor : options.offColor,
+            stroke: null,
+            cornerRadius: options.height / 2,
+        }).addChildTo(this);
+
+        // つまみ部分
+        this.knob = CircleShape({
+            radius: (options.height / 2) - 5,
+            fill: 'white',
+            stroke: null,
+        }).addChildTo(this);
+
+        // 初期のつまみ位置
+        this.knob.x = this.isOn ? (options.width / 4) : -(options.width / 4);
+
+        // タッチ可能にする
+        this.setInteractive(true);
+        this.onpointstart = function () {
+            this.toggle();
+        };
+    },
+
+    toggle: function () {
+        this.isOn = !this.isOn;
+
+        // 背景色の切り替え
+        const targetColor = this.isOn ? '#4CAF50' : '#ccc';
+        this.bg.fill = targetColor;
+
+        // アニメーションでつまみを移動
+        const targetX = this.isOn ? (this.bg.width / 4) : -(this.bg.width / 4);
+        this.knob.tweener.clear()
+            .to({ x: targetX }, 150, 'easeOutQuint')
+            .play();
+
+        // 外部へイベント通知（値が変わったことを知らせる）
+        this.flare('change', { isOn: this.isOn });
+    },
+});
+
 /*
 */
 phina.define('LoadingScene', {
@@ -286,7 +351,6 @@ phina.define('LoadingScene', {
         // ロード開始
         loader.load(options.assets);
     },
-
 });
 
 /*
@@ -339,17 +403,46 @@ phina.define("TitleScene", {
             fontFamily: FONT_FAMILY,
             fill: 'white',
         }).addChildTo(this).setPosition(SCREEN_CENTER_X, SCREEN_CENTER_Y - SCREEN_HEIGHT * 1 / 8);
-        Label({
-            text: 'TAP TO START',
-            fontSize: 40,
-            fontFamily: FONT_FAMILY,
-            fill: 'white',
-        }).addChildTo(this).setPosition(SCREEN_CENTER_X, SCREEN_CENTER_Y + SCREEN_HEIGHT * 1 / 4);
+
+        canVibrate = false;
+        if (window.navigator.vibrate) {
+            Label({
+                text: 'VIVRATION',
+                fontSize: 20,
+                fontFamily: FONT_FAMILY,
+                fill: 'white',
+            }).addChildTo(this).setPosition(SCREEN_CENTER_X - 48, SCREEN_CENTER_Y + SCREEN_HEIGHT * 1 / 8);
+
+            // スイッチの生成
+            const sw = ToggleSwitch().addChildTo(this).setPosition(SCREEN_CENTER_X + 96, SCREEN_CENTER_Y + SCREEN_HEIGHT * 1 / 8);
+            // スイッチが変わった時の処理
+            sw.on('change', function (e) {
+                canVibrate = e.isOn ? true : false;
+            });
+        }
+
+        let that = this;
+        Button(
+            {
+                text: "TAP TO START",
+                fontSize: 40,
+                fontFamily: FONT_FAMILY,
+                align: "center",
+                baseline: "middle",
+                width: 504,
+                height: 75,
+                fill: "#000000",
+                stroke: '#ffffff',         // 枠色
+                strokeWidth: 5,         // 枠太さ
+            }
+        ).addChildTo(this).setPosition(SCREEN_CENTER_X, SCREEN_CENTER_Y + SCREEN_HEIGHT * 1 / 4).onpush = function () {
+            that.exit();
+        };
     },
     // タッチで次のシーンへ
-    onpointstart: function () {
-        this.exit();
-    },
+    //onpointstart: function () {
+    //    this.exit();
+    //},
 });
 
 // メインシーン
@@ -742,6 +835,9 @@ phina.define('MainScene', {
 
                 // 爆発表示
                 Explosion(hema.x, hema.y, HEMA_RADIUS * 2).addChildTo(group3);
+                if (canVibrate) {
+                    window.navigator.vibrate([100, 30, 200]);
+                }
 
                 // 画面から削除
                 hema.remove();
@@ -1048,7 +1144,9 @@ phina.define('MainScene', {
             .call(() => {
                 explosion.remove();
             });
-
+        if (canVibrate) {
+            window.navigator.vibrate([500, 50, 100, 45, 50, 40, 30]);
+        }
     },
 
 
