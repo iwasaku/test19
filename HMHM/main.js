@@ -1135,12 +1135,12 @@ phina.define('MainScene', {
         // 爆発エフェクト
         const explosion = Sprite("bomb_explosion").addChildTo(group3);
         explosion.setPosition(bombX, bombY);
-        explosion.scaleX = 0.0;
-        explosion.scaleY = 0.0;
+        explosion.scaleX = 0.5;
+        explosion.scaleY = 0.5;
         explosion.alpha = 1.0;
         explosion.rotation = 0;
         explosion.tweener
-            .to({ scaleX: 1.1, scaleY: 1.1, alpha: 0.0, rotation: 90 }, 600, 'easeOutQuad')
+            .to({ scaleX: 1.1, scaleY: 1.1, alpha: 0.3, rotation: 180 }, 600, 'linear')
             .call(() => {
                 explosion.remove();
             });
