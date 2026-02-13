@@ -704,20 +704,20 @@ phina.define('MainScene', {
 
     setupEvents: function () {
         this.on('pointstart', (e) => {
-            if (!this.isGameOver && !this.isShuffling) {
+            if (!this.isGameOver) {
                 this.isDragging = true;
                 this.checkHemaTouch(e.pointer.x, e.pointer.y);
             }
         });
 
         this.on('pointmove', (e) => {
-            if (this.isDragging && !this.isGameOver && !this.isShuffling) {
+            if (this.isDragging && !this.isGameOver) {
                 this.checkHemaTouch(e.pointer.x, e.pointer.y);
             }
         });
 
         this.on('pointend', () => {
-            if (!this.isGameOver && !this.isShuffling) {
+            if (!this.isGameOver) {
                 this.isDragging = false;
                 this.clearChain();
             }
