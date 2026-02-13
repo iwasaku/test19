@@ -552,6 +552,9 @@ phina.define('MainScene', {
         this.isParty = false;
         this.partyCount = 0;
 
+        // チェーンライン用のレイヤー
+        this.chainLineLayer = DisplayElement().addChildTo(group3);
+
         // Box2D初期化を待つ
         this.initBox2D();
     },
@@ -892,6 +895,11 @@ phina.define('MainScene', {
         }
 
         this.chain = [];
+
+        // チェーンラインをクリア
+        if (this.chainLineLayer) {
+            this.chainLineLayer.children.clear();
+        }
     },
 
     enterParty: function () {
@@ -1373,11 +1381,15 @@ phina.define('MainScene', {
                 bomb.updateFromBody();
             });
 
+            // チェーンラインを描画
+            this.drawChainLine();
+
             // タイマー更新
             this.updateTimer();
 
             // コンボタイマー
             this.updateComboTimer();
+
             // パーティーゲージ更新
             this.updatePartyGauge();
 
@@ -1466,6 +1478,50 @@ phina.define('MainScene', {
 
             body = body.GetNext();
         }
+    },
+
+    drawChainLine: function () {
+        // 既存のラインをクリア
+        if (this.chainLineLayer) {
+            this.chainLineLayer.children.clear();
+        }
+
+        // チェーンが2つ以上ある場合のみ描画
+        if (this.chain.length < 2) return;
+
+        const lineColor = this.isParty ? '#ff00ff' : '#ffff00';
+
+        // すべてのヘマを線で結ぶ
+        for (let i = 0; i < this.chain.length - 1; i++) {
+            const hema1 = this.chain[i];
+            const hema2 = this.chain[i + 1];
+
+            const dx = hema2.x - hema1.x;
+            const dy = hema2.y - hema1.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+            // ラインを描画
+            const line = RectangleShape({
+                width: distance,
+                height: 8,
+                fill: lineColor,
+                stroke: null,
+            }).addChildTo(this.chainLineLayer);
+
+            line.x = (hema1.x + hema2.x) / 2;
+            line.y = (hema1.y + hema2.y) / 2;
+            line.rotation = angle;
+        }
+
+        // 各ヘマの位置に丸を描画
+        this.chain.forEach((hema) => {
+            CircleShape({
+                radius: 5,
+                fill: lineColor,
+                stroke: null,
+            }).addChildTo(this.chainLineLayer).setPosition(hema.x, hema.y);
+        });
     },
 });
 // アプリケーション起動
