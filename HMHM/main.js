@@ -404,17 +404,17 @@ phina.define("TitleScene", {
             fill: 'white',
         }).addChildTo(this).setPosition(SCREEN_CENTER_X, SCREEN_CENTER_Y - SCREEN_HEIGHT * 1 / 8);
         Label({
-            text: '((',
-            fontSize: 40,
+            text: '“',
+            fontSize: 60,
             fontFamily: FONT_FAMILY,
             fill: 'white',
         }).addChildTo(this).setPosition(SCREEN_CENTER_X - 220, SCREEN_CENTER_Y - 240);
         Label({
-            text: '))',
-            fontSize: 40,
+            text: '„',
+            fontSize: 60,
             fontFamily: FONT_FAMILY,
             fill: 'white',
-        }).addChildTo(this).setPosition(SCREEN_CENTER_X + 220, SCREEN_CENTER_Y - 140);
+        }).addChildTo(this).setPosition(SCREEN_CENTER_X + 200, SCREEN_CENTER_Y - 140);
 
         canVibrate = false;
         if (window.navigator.vibrate) {
@@ -550,7 +550,7 @@ phina.define('MainScene', {
 
         // シャッフルボタン
         this.shuffleButton = Button({
-            text: 'HM',
+            text: '-',
             width: 60,
             height: 60,
             fontSize: 24,
@@ -573,6 +573,7 @@ phina.define('MainScene', {
         this.isDragging = false;
         this.gameTime = GAME_TIME;
         this.gameOverTime = 10;
+        this.shuffleButtonTime = 0;
         this.isGameOver = false;
         this.isShuffling = false; // シャッフル中フラグ
 
@@ -1199,6 +1200,20 @@ phina.define('MainScene', {
         if (this.gameTime <= 0) {
             this.gameTime = 0;
             this.gameOverInit();
+        }
+
+        this.shuffleButtonTime += 1 / 60;
+        if (this.shuffleButtonTime >= 0.05) {
+            if (this.shuffleButton.text === '-') {
+                this.shuffleButton.text = '\\';
+            } else if (this.shuffleButton.text === '\\') {
+                this.shuffleButton.text = '|';
+            } else if (this.shuffleButton.text === '|') {
+                this.shuffleButton.text = '/';
+            } else {
+                this.shuffleButton.text = '-';
+            }
+            this.shuffleButtonTime = 0;
         }
 
         // タイマー表示更新
