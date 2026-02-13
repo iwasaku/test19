@@ -1578,6 +1578,17 @@ phina.define('MainScene', {
                 hema.body.ApplyForceToCenter(force, true);
             }
         });
+        // ボムを上に飛ばす
+        bombObjects.forEach((bomb) => {
+            if (bomb.body) {
+                // 上向きの力を加える
+                const force = new Box2D.b2Vec2(
+                    (Math.random() - 0.4) * 25000,
+                    - 10000
+                );
+                bomb.body.ApplyForceToCenter(force, true);
+            }
+        });
 
         // 高さ制限チェック用のインターバル
         const checkInterval = setInterval(() => {
@@ -1587,6 +1598,15 @@ phina.define('MainScene', {
                     const velocity = hema.body.GetLinearVelocity();
                     if (velocity.y < 0) {
                         hema.body.SetLinearVelocity(new Box2D.b2Vec2(velocity.x, 5));
+                    }
+                }
+            });
+            bombObjects.forEach((bomb) => {
+                if (bomb.body && bomb.y < -40) {
+                    // 画面上辺付近に到達したら速度を下向きに設定
+                    const velocity = bomb.body.GetLinearVelocity();
+                    if (velocity.y < 0) {
+                        bomb.body.SetLinearVelocity(new Box2D.b2Vec2(velocity.x, 5));
                     }
                 }
             });
