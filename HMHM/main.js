@@ -403,6 +403,18 @@ phina.define("TitleScene", {
             fontFamily: FONT_FAMILY,
             fill: 'white',
         }).addChildTo(this).setPosition(SCREEN_CENTER_X, SCREEN_CENTER_Y - SCREEN_HEIGHT * 1 / 8);
+        Label({
+            text: '((',
+            fontSize: 40,
+            fontFamily: FONT_FAMILY,
+            fill: 'white',
+        }).addChildTo(this).setPosition(SCREEN_CENTER_X - 220, SCREEN_CENTER_Y - 240);
+        Label({
+            text: '))',
+            fontSize: 40,
+            fontFamily: FONT_FAMILY,
+            fill: 'white',
+        }).addChildTo(this).setPosition(SCREEN_CENTER_X + 220, SCREEN_CENTER_Y - 140);
 
         canVibrate = false;
         if (window.navigator.vibrate) {
@@ -1214,7 +1226,7 @@ phina.define('MainScene', {
     gameOverInit: function () {
         this.isGameOver = true;
 
-        postText = "HxMx HxMx\nスコア: " + this.score;
+        postText = "NMLS HM HM\nスコア: " + this.score;
         if (this.maxCombo > 0) postText += ("\n最大コンボ: " + this.maxCombo);
         if (this.partyCount > 0) postText += ("\nパーティー回数: " + this.partyCount);
 
