@@ -536,6 +536,22 @@ phina.define('MainScene', {
             strokeWidth: 2,
         }).addChildTo(group4).setPosition(SCREEN_WIDTH / 2, 152);
 
+        // シャッフルボタン
+        this.shuffleButton = Button({
+            text: 'HM',
+            width: 60,
+            height: 60,
+            fontSize: 24,
+            fontFamily: FONT_FAMILY,
+            fill: '#9b59b6',
+            fontColor: 'white',
+        }).addChildTo(group4).setPosition(SCREEN_WIDTH - 80, SCREEN_HEIGHT - 40);
+        this.shuffleButton.on('click', () => {
+            if (!this.isGameOver && !this.isShuffling) {
+                this.shuffleHemas();
+            }
+        });
+
         this.score = 0;
         this.combo = 0;
         this.maxCombo = 0;
@@ -546,6 +562,7 @@ phina.define('MainScene', {
         this.gameTime = GAME_TIME;
         this.gameOverTime = 10;
         this.isGameOver = false;
+        this.isShuffling = false; // シャッフル中フラグ
 
         // パーティー関連
         this.partyGaugeValue = 0;
@@ -582,40 +599,40 @@ phina.define('MainScene', {
 
         // 左床（斜め）
         const leftGroundDef = new Box2D.b2BodyDef();
-        leftGroundDef.set_position(new Box2D.b2Vec2(SCREEN_WIDTH / 4 / 30, SCREEN_HEIGHT * 1.045 / 30));
+        leftGroundDef.set_position(new Box2D.b2Vec2(SCREEN_WIDTH / 4 / 30, SCREEN_HEIGHT * 1.000 / 30));
         leftGroundDef.set_angle(-0.174); // 約-10度
         const leftGround = world.CreateBody(leftGroundDef);
         const leftGroundShape = new Box2D.b2PolygonShape();
-        leftGroundShape.SetAsBox(SCREEN_HEIGHT * 1.045 / 2 / 30, 1);
+        leftGroundShape.SetAsBox(SCREEN_HEIGHT * 1.000 / 2 / 30, 1);
         leftGround.CreateFixture(leftGroundShape, 0);
         // 左床の表示（斜め）
         RectangleShape({
             width: SCREEN_HEIGHT,
-            height: 63,
+            height: 98,
             fill: '#ff0000',
             stroke: '#ff0000',
             strokeWidth: 3,
         }).addChildTo(group2)
-            .setPosition(SCREEN_WIDTH / 4, SCREEN_HEIGHT * 1.05)
+            .setPosition(SCREEN_WIDTH / 4, SCREEN_HEIGHT * 1.035)
             .setRotation(-10);
 
         // 右床（斜め）
         const rightGroundDef = new Box2D.b2BodyDef();
-        rightGroundDef.set_position(new Box2D.b2Vec2(SCREEN_WIDTH * 3 / 4 / 30, SCREEN_HEIGHT * 1.045 / 30));
+        rightGroundDef.set_position(new Box2D.b2Vec2(SCREEN_WIDTH * 3 / 4 / 30, SCREEN_HEIGHT * 1.000 / 30));
         rightGroundDef.set_angle(0.174); // 約10度
         const rightGround = world.CreateBody(rightGroundDef);
         const rightGroundShape = new Box2D.b2PolygonShape();
-        rightGroundShape.SetAsBox(SCREEN_HEIGHT * 1.045 / 2 / 30, 1);
+        rightGroundShape.SetAsBox(SCREEN_HEIGHT * 1.000 / 2 / 30, 1);
         rightGround.CreateFixture(rightGroundShape, 0);
         // 右床の表示（斜め）
         RectangleShape({
             width: SCREEN_HEIGHT,
-            height: 63,
+            height: 98,
             fill: '#ff0000',
             stroke: '#ff0000',
             strokeWidth: 3,
         }).addChildTo(group2)
-            .setPosition(SCREEN_WIDTH * 3 / 4, SCREEN_HEIGHT * 1.05)
+            .setPosition(SCREEN_WIDTH * 3 / 4, SCREEN_HEIGHT * 1.035)
             .setRotation(10);
 
         // 左壁
@@ -687,20 +704,20 @@ phina.define('MainScene', {
 
     setupEvents: function () {
         this.on('pointstart', (e) => {
-            if (!this.isGameOver) {
+            if (!this.isGameOver && !this.isShuffling) {
                 this.isDragging = true;
                 this.checkHemaTouch(e.pointer.x, e.pointer.y);
             }
         });
 
         this.on('pointmove', (e) => {
-            if (this.isDragging && !this.isGameOver) {
+            if (this.isDragging && !this.isGameOver && !this.isShuffling) {
                 this.checkHemaTouch(e.pointer.x, e.pointer.y);
             }
         });
 
         this.on('pointend', () => {
-            if (!this.isGameOver) {
+            if (!this.isGameOver && !this.isShuffling) {
                 this.isDragging = false;
                 this.clearChain();
             }
@@ -1523,7 +1540,54 @@ phina.define('MainScene', {
             }).addChildTo(this.chainLineLayer).setPosition(hema.x, hema.y);
         });
     },
+
+    shuffleHemas: function () {
+        this.isShuffling = true;
+
+        // チェーンをクリア
+        this.chain.forEach((hema) => {
+            hema.unhighlight();
+        });
+        this.chain = [];
+        if (this.chainLineLayer) {
+            this.chainLineLayer.children.clear();
+        }
+
+        const Box2D = this.Box2D;
+
+        // ツムを上に飛ばす
+        hemaObjects.forEach((hema) => {
+            if (hema.body) {
+                // 上向きの力を加える
+                const force = new Box2D.b2Vec2(
+                    (Math.random() - 0.4) * 25000,
+                    - 10000
+                );
+                hema.body.ApplyForceToCenter(force, true);
+            }
+        });
+
+        // 高さ制限チェック用のインターバル
+        const checkInterval = setInterval(() => {
+            hemaObjects.forEach((hema) => {
+                if (hema.body && hema.y < -40) {
+                    // 画面上辺付近に到達したら速度を下向きに設定
+                    const velocity = hema.body.GetLinearVelocity();
+                    if (velocity.y < 0) {
+                        hema.body.SetLinearVelocity(new Box2D.b2Vec2(velocity.x, 5));
+                    }
+                }
+            });
+        }, 16);
+
+        // 2秒後にシャッフル完了
+        setTimeout(() => {
+            this.isShuffling = false;
+        }, 2000);
+    },
+
 });
+
 // アプリケーション起動
 phina.main(function () {
     var app = GameApp({
