@@ -7,7 +7,7 @@ const SCREEN_CENTER_Y = SCREEN_HEIGHT / 2;  // スクリーン高さの半分
 const HEMA_RADIUS = 45;
 const BOMB_RADIUS = HEMA_RADIUS * 1.5;
 const BOMB_CHAIN_LENGTH = 7;
-const INIT_HEMA_COUNT = 40;
+const INIT_HEMA_COUNT = 50;
 const COLORS = ['red', 'blue', 'yellow', 'green', 'purple'];
 const GAME_TIME = 60; // 制限時間（秒）
 const COMBO_TIME_LIMIT = 1.0; // コンボ継続時間（秒）
@@ -398,8 +398,8 @@ phina.define("TitleScene", {
             fill: 'white',
         }).addChildTo(this).setPosition(SCREEN_CENTER_X, SCREEN_CENTER_Y - SCREEN_HEIGHT * 1 / 8 - SCREEN_HEIGHT * 1 / 4);
         Label({
-            text: 'HM\nHM',
-            fontSize: 160,
+            text: 'Hema\nHema',
+            fontSize: 120,
             fontFamily: FONT_FAMILY,
             fill: 'white',
         }).addChildTo(this).setPosition(SCREEN_CENTER_X, SCREEN_CENTER_Y - SCREEN_HEIGHT * 1 / 8);
@@ -408,13 +408,13 @@ phina.define("TitleScene", {
             fontSize: 60,
             fontFamily: FONT_FAMILY,
             fill: 'white',
-        }).addChildTo(this).setPosition(SCREEN_CENTER_X - 220, SCREEN_CENTER_Y - 240);
+        }).addChildTo(this).setPosition(SCREEN_CENTER_X - 280, SCREEN_CENTER_Y - 200);
         Label({
             text: '„',
             fontSize: 60,
             fontFamily: FONT_FAMILY,
             fill: 'white',
-        }).addChildTo(this).setPosition(SCREEN_CENTER_X + 200, SCREEN_CENTER_Y - 140);
+        }).addChildTo(this).setPosition(SCREEN_CENTER_X + 280, SCREEN_CENTER_Y - 150);
 
         canVibrate = false;
         if (window.navigator.vibrate) {
@@ -1241,7 +1241,7 @@ phina.define('MainScene', {
     gameOverInit: function () {
         this.isGameOver = true;
 
-        postText = "NMLS HM HM\nスコア: " + this.score;
+        postText = "NMLS Hema Hema\nスコア: " + this.score;
         if (this.maxCombo > 0) postText += ("\n最大コンボ: " + this.maxCombo);
         if (this.partyCount > 0) postText += ("\nパーティー回数: " + this.partyCount);
 
