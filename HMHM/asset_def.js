@@ -1,24 +1,24 @@
 const FONT_FAMILY = "'Press Start 2P','Meiryo',sans-serif";
 const ASSETS = {
     image: {
-        'red': './images/gazami_180_32.png',
-        'blue': './images/benizuwai_180_32.png',
-        'yellow': './images/kegani_180_32.png',
-        'green': './images/taraba_180_32.png',
-        'purple': './images/takaashi_180_32.png',
+        'red': './resource/images/gazami_180_32.png',
+        'blue': './resource/images/benizuwai_180_32.png',
+        'yellow': './resource/images/honkonisigani_180_32.png',
+        'green': './resource/images/taraba_180_32.png',
+        'purple': './resource/images/sawagani_180_32.png',
 
-        'bomb0': './images/bomb_noon_32.png',
-        'bomb1': './images/bomb_twilight_32.png',
-        'bomb2': './images/bomb_night_32.png',
+        'bomb0': './resource/images/bomb_noon_32.png',
+        'bomb1': './resource/images/bomb_twilight_32.png',
+        'bomb2': './resource/images/bomb_night_32.png',
 
-        'bomb_explosion': './images/kanizsa.png',
+        'bomb_explosion': './resource/images/kanizsa.png',
 
-        'bg0': './images/bg_02_640x960_128.png',
-        'bg1': './images/bg_03_640x960_128.png',
-        'bg2': './images/bg_04_640x960_128.png',
-        'bg3': './images/bg_05_640x960_128.png',
-        'bg4': './images/bg_07_640x960_128.png',
-        'bg5': './images/bg_06_640x960_128.png',
+        'bg0': './resource/images/bg_02_640x960_128.png',
+        'bg1': './resource/images/bg_03_640x960_128.png',
+        'bg2': './resource/images/bg_04_640x960_128.png',
+        'bg3': './resource/images/bg_05_640x960_128.png',
+        'bg4': './resource/images/bg_07_640x960_128.png',
+        'bg5': './resource/images/bg_06_640x960_128.png',
 
         "explosion": "https://iwasaku.github.io/test15/HGYG/resource/expl_48.png",
     },
@@ -50,7 +50,7 @@ const ASSETS = {
         "explosion_4": "https://iwasaku.github.io/test8/COKS/resource/explosion_4.mp3",
         "explosion_5": "https://iwasaku.github.io/test8/COKS/resource/explosion_5.mp3",
         "explosion_6": "https://iwasaku.github.io/test8/COKS/resource/explosion_6.mp3",
-        "select": "https://iwasaku.github.io/test19/HMHM/resource/tap.mp3",
+        "select": "https://iwasaku.github.io/test19/HMHM/resource/se/tap.mp3",
         "gameover": "https://iwasaku.github.io/test11/UT-404/SSS2/resource/t02/12.mp3",
     },
 };
